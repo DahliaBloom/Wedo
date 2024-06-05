@@ -26,7 +26,7 @@
 
 <div class="flex flex-col gap-1.5">
     {#each taskGroups as taskGroup}
-        <div class="collapse bg-base-100 drop-shadow-lg">
+        <div class="collapse bg-base-100 shadow-lg tr">
             <input type="radio" name="taskGroups"/>
             <div class="collapse-title font-light text-xl flex gap-2 justify-between items-center pr-[1rem] truncate">
                 {taskGroup.title}
