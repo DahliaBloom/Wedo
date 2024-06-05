@@ -1,5 +1,5 @@
 <script>
-    import {onMount} from 'svelte'
+    import {afterUpdate} from 'svelte'
     import penguins from '$lib/images/penguins.png'
 
     const sentences = [
@@ -54,19 +54,17 @@
         "Keep pushing forward, no matter what 🚀",
         "You are the best thing that happened to me 💖"
     ]
-    let motivationalSentence = ''
+    let motivationalSentence = getRandomSentence()
 
     function getRandomSentence() {
         const randomIndex = Math.floor(Math.random() * sentences.length);
         return sentences[randomIndex];
     }
-
-    onMount(() => {
-        motivationalSentence = getRandomSentence();
-    });
 </script>
 
-<div class="fixed w-1/2 bottom-2 right-2">
+<div class="fixed bottom-2 right-2" style="width: 50vmin">
     <img src={penguins} alt="">
-    <p class="absolute top-[0.9rem] left-4 w-[10.5rem] h-[2.8rem] text-center text-sm">{motivationalSentence}</p>
+    <div class="absolute top-[5%] left-[5%] w-[58%] h-[21%] grid place-items-center text-center" style="font-size: 2vmin">
+        {motivationalSentence}
+    </div>
 </div>
