@@ -45,15 +45,18 @@
                 {/each}
                 <div class="grid place-items-center pt-1">
                     <button class="btn btn-sm btn-circle btn-primary"
-                            onclick="modal_{taskGroup.title.replace(/ /g, '_')}.showModal()">
+                            onclick="modal_{taskGroup.title.replace(/[^\x00-\x7F]/g, '').replace(/ /g, '_')}.showModal()">
                         <i class="fa-solid fa-plus"></i>
                     </button>
-                    <dialog id="modal_{taskGroup.title.replace(/ /g, '_')}" class="modal">
+                    <dialog id="modal_{taskGroup.title.replace(/[^\x00-\x7F]/g, '').replace(/ /g, '_')}" class="modal">
                         <div class="modal-box">
                             <form method="dialog">
                                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                             </form>
-                            <h3 class="font-bold text-lg">Add task to {taskGroup.title}</h3>
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-bold text-lg bg-primary rounded-lg px-2">{taskGroup.title}</h3>
+                                <h3 class="font-bold text-lg">...</h3>
+                            </div>
                             <form on:submit={(e) => addTask(taskGroup, e)}>
                                 <input type="text" placeholder="Task ..."
                                        class="input w-full py-4 my-3 focus:outline-none"/>
