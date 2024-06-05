@@ -2,6 +2,7 @@
     import Task from "$lib/components/Task.svelte";
     import {authStore} from "$lib/utils/stores.js";
 
+    let addTaskInputElement;
     let taskGroups = [];
 
     authStore.subscribe(store => {
@@ -19,6 +20,7 @@
             return store
         })
         e.target.parentElement.parentElement.close()
+        addTaskInputElement.value = ''
     }
 </script>
 
@@ -45,7 +47,7 @@
                 {/each}
                 <div class="grid place-items-center pt-1">
                     <button class="btn btn-sm btn-circle btn-primary"
-                            onclick="modal_{taskGroup.title.replace(/[^\x00-\x7F]/g, '').replace(/ /g, '_')}.showModal()">
+                            onclick="modal_{taskGroup.title.replace(/[^\x00-\x7F]/g, '').replace(/ /g, '_')}.showModal()" on:click={() => addTaskInputElement.focus()}>
                         <i class="fa-solid fa-plus"></i>
                     </button>
                     <dialog id="modal_{taskGroup.title.replace(/[^\x00-\x7F]/g, '').replace(/ /g, '_')}" class="modal">
@@ -58,7 +60,7 @@
                                 <h3 class="font-bold text-lg">...</h3>
                             </div>
                             <form on:submit={(e) => addTask(taskGroup, e)}>
-                                <input type="text" placeholder="Task ..."
+                                <input bind:this={addTaskInputElement} type="text" placeholder="Task ..."
                                        class="input w-full py-4 my-3 focus:outline-none"/>
                             </form>
                         </div>

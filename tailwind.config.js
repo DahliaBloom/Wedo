@@ -12,7 +12,7 @@ export default {
                 "secondary": "#AFC0B2", // Gentle Surf Spray
                 "accent": "#A9C4B5", // Gentle Desert Sage
                 "neutral": "#848681", // Gentle Witcher
-                "base-100": "#F5F1DB", // Gentle Monte
+                "base-100": "#EEE2D4", // Monte
                 "info": "#9FB1A9", // Gentle Sage
                 "success": "#B2CBB8", // Gentle Eucalyptus
                 "warning": "#DCD9C4", // Gentle Seasalts for warning
