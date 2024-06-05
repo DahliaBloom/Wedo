@@ -13,26 +13,33 @@ export const authHandlers = {
     }
 }
 
-let lastUpload = 0
+let lastUpload = Date.now()
+let activeTimeout = false
 export let unsavedChanges = false; // TODO use this to show a warning
-async function uploadStore(store) {
-    console.log('uploading store')
-    if (Date.now() - lastUpload < 15000 || store.loading) {
-        if (unsavedChanges) {
-            setTimeout(() => uploadStore(store), 15500 - (Date.now() - lastUpload))
+async function uploadStore(store, fromTimeout = false) {
+    if ((Date.now() - lastUpload < 15000 || store.loading) && !fromTimeout) {
+        if (store.loading) {
+            lastUpload = Date.now()
+            return
         }
-        unsavedChanges = true
+        console.log(activeTimeout)
+        if (!activeTimeout) {
+            setTimeout(() => uploadStore(store, true), 15500 - (Date.now() - lastUpload))
+            activeTimeout = true
+            unsavedChanges = true
+        }
         return
     }
-    await setDoc(store.groupRef, store.data, {merge: true})
     lastUpload = Date.now()
     unsavedChanges = false
+    activeTimeout = false
+    await setDoc(store.groupRef, store.data, {merge: true})
 }
 
 export async function forceUploadStore() {
     console.log('force uploading store')
     lastUpload = 0;
-    await uploadStore(authStore)
+    authStore.update(store => store)
 }
 
 authStore.subscribe(uploadStore)
