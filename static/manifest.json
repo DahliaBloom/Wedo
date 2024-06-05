@@ -1,0 +1,19 @@
+{
+    "name": "Wedo",
+    "display": "standalone",
+    "theme_color": "#f7f7f7",
+    "background_color": "#f7f7f7",
+    "icons": [
+        {
+            "sizes": "192x192",
+            "src": "icon192.png",
+            "type": "image/png"
+        },
+        {
+            "sizes": "512x512",
+            "src": "icon512.png",
+            "type": "image/png"
+        }
+    ],
+    "orientation": "portrait"
+}
