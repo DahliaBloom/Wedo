@@ -2,7 +2,7 @@
     import DailyTaskDoneBar from "$lib/components/DailyTaskDoneBar.svelte";
     import TaskGroups from "$lib/components/TaskGroups.svelte";
     import {authStore, forceUploadStore} from "$lib/utils/stores.js";
-    import {onMount, onDestroy} from 'svelte'
+    import {onDestroy, onMount} from 'svelte'
     import MotivationalPenguins from "$lib/components/MotivationalPenguins.svelte";
 
     onDestroy(forceUploadStore)
@@ -48,8 +48,8 @@
     </div>
 {:else}
     <div class="space-y-6">
-        <DailyTaskDoneBar />
-        <TaskGroups />
+        <DailyTaskDoneBar/>
+        <TaskGroups/>
     </div>
-    <MotivationalPenguins />
+    <MotivationalPenguins/>
 {/if}

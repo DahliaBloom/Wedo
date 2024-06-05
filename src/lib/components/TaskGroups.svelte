@@ -1,27 +1,48 @@
 <script>
     import Task from "$lib/components/Task.svelte";
     import {authStore} from "$lib/utils/stores.js";
+    import AddInputHandlerButton from "$lib/components/AddInputHandlerButton.svelte";
 
-    let addTaskInputElement;
     let taskGroups = [];
 
     authStore.subscribe(store => {
         taskGroups = store.data.taskGroups
     });
 
-    function addTask(taskGroup, e) {
-        const taskTitle = e.target.children[0].value
-        authStore.update(store => {
+    async function addTask(taskGroup, taskTitle) {
+        await authStore.update(store => {
             taskGroup.tasks.unshift({
                 title: taskTitle,
                 author: store.user.name,
                 done: false
             })
+            taskGroup.taskHasBeenAdded = true
             return store
         })
-        e.target.parentElement.parentElement.close()
-        addTaskInputElement.value = ''
     }
+
+    async function addGroup(groupTitle) {
+        await authStore.update(store => {
+            store.data.taskGroups.push({
+                title: groupTitle,
+                donePercentage: 0,
+                tasks: []
+            })
+            return store
+        })
+    }
+
+    async function taskDone(taskGroup) {
+        taskGroup.donePercentage = Math.round((taskGroup.tasks.filter(task => task.done).length / taskGroup.tasks.length) * 100)
+        const [task] = taskGroup.tasks.splice(taskGroup.tasks.findIndex(task => task.done), 1)
+        taskGroup.tasks.push(task)
+        await authStore.update(store => {
+            if (taskGroup.donePercentage === 100) store.data.taskGroups.splice(store.data.taskGroups.findIndex(group => group === taskGroup), 1)
+            taskGroups = store.data.taskGroups
+            return store
+        })
+    }
+
 </script>
 
 <div class="flex flex-col gap-1.5">
@@ -38,38 +59,24 @@
             <div class="collapse-content space-y-2">
                 <div class="divider -mt-0.5"></div>
                 {#each taskGroup.tasks as task}
-                    <Task task={task} on:statusChange={(e) => {
-                        taskGroup.donePercentage = Math.round((taskGroup.tasks.filter(task => task.done).length / taskGroup.tasks.length) * 100)
-                        const [task] = taskGroup.tasks.splice(taskGroup.tasks.findIndex(task => task.done), 1)
-                        taskGroup.tasks.push(task)
-                        authStore.update(store => store)
-                    }}/>
+                    <Task task={task} on:statusChange={() => taskDone(taskGroup)}/>
+                    <!-- TODO resolve checkbox can be marked multiple times -->
                 {/each}
                 <div class="grid place-items-center pt-1">
-                    <button class="btn btn-sm btn-circle btn-primary"
-                            onclick="modal_{taskGroup.title.replace(/[^\x00-\x7F]/g, '').replace(/ /g, '_')}.showModal()" on:click={() => addTaskInputElement.focus()}>
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                    <dialog id="modal_{taskGroup.title.replace(/[^\x00-\x7F]/g, '').replace(/ /g, '_')}" class="modal">
-                        <div class="modal-box">
-                            <form method="dialog">
-                                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                            </form>
-                            <div class="flex items-center gap-2">
-                                <h3 class="font-bold text-lg bg-primary rounded-lg px-2">{taskGroup.title}</h3>
-                                <h3 class="font-bold text-lg">...</h3>
-                            </div>
-                            <form on:submit={(e) => addTask(taskGroup, e)}>
-                                <input bind:this={addTaskInputElement} type="text" placeholder="Task ..."
-                                       class="input w-full py-4 my-3 focus:outline-none"/>
-                            </form>
-                        </div>
-                        <form method="dialog" class="modal-backdrop">
-                            <button></button>
-                        </form>
-                    </dialog>
+                    <AddInputHandlerButton modal_data={{
+                        colored: taskGroup.title,
+                        plain: '...',
+                        placeholder: 'Task ...'
+                    }} on:submit={(e) => addTask(taskGroup, e.detail)}/>
                 </div>
             </div>
         </div>
     {/each}
+    <div class="mt-3 mb-10 grid place-items-center z-50">
+        <AddInputHandlerButton modal_data={{
+            colored: "Add new group",
+            plain: "...",
+            placeholder: "Group name"
+        }} on:submit={(e) => addGroup(e.detail)}/>
+    </div>
 </div>

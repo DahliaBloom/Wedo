@@ -17,16 +17,18 @@ let lastUpload = Date.now()
 let activeTimeout = false
 export let unsavedChanges = false; // TODO use this to show a warning
 async function uploadStore(store, fromTimeout = false) {
-    if ((Date.now() - lastUpload < 15000 || store.loading) && !fromTimeout) {
+    if ((Date.now() - lastUpload < 15000 || store.loading)) {
         if (store.loading) {
             lastUpload = Date.now()
             return
         }
         console.log(activeTimeout)
-        if (!activeTimeout) {
+        if (!activeTimeout && !fromTimeout) {
             setTimeout(() => uploadStore(store, true), 15500 - (Date.now() - lastUpload))
             activeTimeout = true
             unsavedChanges = true
+        } else if (fromTimeout) {
+            activeTimeout = false
         }
         return
     }
@@ -34,6 +36,7 @@ async function uploadStore(store, fromTimeout = false) {
     unsavedChanges = false
     activeTimeout = false
     await setDoc(store.groupRef, store.data, {merge: true})
+    console.log('uploaded store')
 }
 
 export async function forceUploadStore() {
