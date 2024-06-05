@@ -1,7 +1,44 @@
 <script>
     import DailyTaskDoneBar from "$lib/components/DailyTaskDoneBar.svelte";
     import TaskGroups from "$lib/components/TaskGroups.svelte";
-    import {authStore} from "$lib/utils/stores.js";
+    import {authStore, forceUploadStore} from "$lib/utils/stores.js";
+    import {onMount, onDestroy} from 'svelte'
+
+    onDestroy(forceUploadStore)
+
+    function handleVisibilityChange() {
+        if (document.hidden) {
+            console.log("PWA is not visible");
+            forceUploadStore(); // Call your async function here
+        } else {
+            console.log("PWA is visible");
+            // You can handle re-entry logic here if needed
+        }
+    }
+
+    function handleBeforeUnload(event) {
+        event.preventDefault();
+        event.returnValue = ''; // Required for some browsers to trigger the alert
+        console.log("User is about to leave the PWA");
+        forceUploadStore(); // Call your async function here
+    }
+
+    function handlePageHide(event) {
+        console.log("Page is being hidden");
+        forceUploadStore(); // Call your async function here
+    }
+
+    onMount(() => {
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        window.addEventListener("pagehide", handlePageHide);
+
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+            window.removeEventListener("pagehide", handlePageHide);
+        };
+    });
 </script>
 
 {#if $authStore.loading}
