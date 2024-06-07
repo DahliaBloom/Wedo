@@ -4,6 +4,7 @@
     import {authStore, forceUploadStore} from "$lib/utils/stores.js";
     import {onDestroy, onMount} from 'svelte'
     import MotivationalPenguins from "$lib/components/MotivationalPenguins.svelte";
+    import WaterTracker from "$lib/components/WaterTracker.svelte";
 
     onDestroy(forceUploadStore)
 
@@ -49,6 +50,7 @@
 {:else}
     <div class="space-y-6">
         <DailyTaskDoneBar/>
+        <WaterTracker />
         <TaskGroups/>
     </div>
     <MotivationalPenguins/>
